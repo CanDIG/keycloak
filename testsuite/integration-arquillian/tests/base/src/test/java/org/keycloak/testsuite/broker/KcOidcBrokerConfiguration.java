@@ -34,11 +34,8 @@ public class KcOidcBrokerConfiguration implements BrokerConfiguration {
     protected static final String ATTRIBUTE_TO_MAP_NAME_2 = "user-attribute-2";
     protected static final String ATTRIBUTE_TO_MAP_USER_INFO = "user-attribute-ufo";
     public static final String USER_INFO_CLAIM = "user-claim";
-    public static final String USER_INFO_CLAIM_2 = "user-claim-3";
-    public static final String USER_INFO_VALUE = "user-value";
     public static final String HARDOCDED_CLAIM = "test";
     public static final String HARDOCDED_VALUE = "value";
-    public static final String HARDCODED_VALUE_2 = "value-2";
 
 
     @Override
