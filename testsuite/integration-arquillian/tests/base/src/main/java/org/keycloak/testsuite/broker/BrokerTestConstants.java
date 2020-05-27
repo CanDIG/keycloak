@@ -18,7 +18,6 @@ class BrokerTestConstants {
     final static String USER_LOGIN = "testuser";
     final static String USER_EMAIL = "user@localhost.com";
     final static String USER_PASSWORD = "password";
-    final static String USER_FIRST_NAME = "firstname";
 
     final static String IDP_SAML_SIGN_KEY = "MIICWwIBAAKBgQDVG8a7xGN6ZIkDbeecySygc" +
             "DfsypjUMNPE4QJjis8B316CvsZQ0hcTTLUyiRpHlHZys2k3xEhHBHymFC1AONcvzZzpb4" +

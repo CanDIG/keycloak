@@ -75,8 +75,4 @@ public interface BrokerConfiguration {
      */
     String getIDPAlias();
 
-    /**
-     * @return First name of the brokered user
-     */
-    String getFirstName();
 }

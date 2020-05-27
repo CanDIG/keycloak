@@ -50,7 +50,6 @@ public abstract class AbstractIdentityProviderMapperTest extends AbstractBaseBro
         UserRepresentation user = UserBuilder.create()
                 .username(bc.getUserLogin())
                 .email(bc.getUserEmail())
-                .firstName(bc.getFirstName())
                 .build();
         user.setEmailVerified(true);
         user.setAttributes(attributes);

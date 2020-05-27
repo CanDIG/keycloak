@@ -247,9 +247,4 @@ public class KcOidcBrokerConfiguration implements BrokerConfiguration {
         return IDP_OIDC_ALIAS;
     }
 
-    @Override
-    public String getFirstName() {
-        return USER_FIRST_NAME;
-    }
-
 }
