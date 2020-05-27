@@ -74,4 +74,9 @@ public interface BrokerConfiguration {
      * @return Alias of the identity provider as defined in the broker realm
      */
     String getIDPAlias();
+
+    /**
+     * @return First name of the brokered user
+     */
+    String getFirstName();
 }

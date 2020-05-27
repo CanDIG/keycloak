@@ -246,4 +246,9 @@ public class KcSamlBrokerConfiguration implements BrokerConfiguration {
     public String getIDPAlias() {
         return IDP_SAML_ALIAS;
     }
+
+    @Override
+    public String getFirstName() {
+        return USER_FIRST_NAME;
+    }
 }

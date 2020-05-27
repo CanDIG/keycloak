@@ -32,9 +32,14 @@ public class KcOidcBrokerConfiguration implements BrokerConfiguration {
 
     protected static final String ATTRIBUTE_TO_MAP_NAME = "user-attribute";
     protected static final String ATTRIBUTE_TO_MAP_NAME_2 = "user-attribute-2";
+    protected static final String ATTRIBUTE_TO_MAP_USER_INFO = "user-attribute-ufo";
     public static final String USER_INFO_CLAIM = "user-claim";
+    public static final String USER_INFO_CLAIM_2 = "user-claim-3";
+    public static final String USER_INFO_VALUE = "user-value";
     public static final String HARDOCDED_CLAIM = "test";
     public static final String HARDOCDED_VALUE = "value";
+    public static final String HARDCODED_VALUE_2 = "value-2";
+
 
     @Override
     public RealmRepresentation createProviderRealm() {
@@ -148,7 +153,22 @@ public class KcOidcBrokerConfiguration implements BrokerConfiguration {
         hardcodedJsonClaimMapperConfig.put(OIDCAttributeMapperHelper.INCLUDE_IN_ID_TOKEN, "true");
         hardcodedJsonClaimMapperConfig.put(HardcodedClaim.CLAIM_VALUE, "{\"" + HARDOCDED_CLAIM + "\": \"" + HARDOCDED_VALUE + "\"}");
 
-        client.setProtocolMappers(Arrays.asList(emailMapper, userAttrMapper, userAttrMapper2, nestedAttrMapper, dottedAttrMapper, hardcodedJsonClaim));
+        ProtocolMapperRepresentation userAttrMapper3 = new ProtocolMapperRepresentation();
+        userAttrMapper3.setName("attribute - name");
+        userAttrMapper3.setProtocol(OIDCLoginProtocol.LOGIN_PROTOCOL);
+        userAttrMapper3.setProtocolMapper(UserAttributeMapper.PROVIDER_ID);
+
+        Map<String, String> userAttr3MapperConfig = userAttrMapper.getConfig();
+        userAttr3MapperConfig.put(ProtocolMapperUtils.USER_ATTRIBUTE, ATTRIBUTE_TO_MAP_USER_INFO);
+        userAttr3MapperConfig.put(OIDCAttributeMapperHelper.TOKEN_CLAIM_NAME, ATTRIBUTE_TO_MAP_USER_INFO);
+        userAttr3MapperConfig.put(OIDCAttributeMapperHelper.JSON_TYPE, ProviderConfigProperty.STRING_TYPE);
+        userAttr3MapperConfig.put(OIDCAttributeMapperHelper.INCLUDE_IN_ACCESS_TOKEN, "false");
+        userAttr3MapperConfig.put(OIDCAttributeMapperHelper.INCLUDE_IN_ID_TOKEN, "false");
+        userAttr3MapperConfig.put(OIDCAttributeMapperHelper.INCLUDE_IN_USERINFO, "true");
+        userAttr3MapperConfig.put(ProtocolMapperUtils.MULTIVALUED, "true");
+
+
+        client.setProtocolMappers(Arrays.asList(emailMapper, userAttrMapper, userAttrMapper2, nestedAttrMapper, dottedAttrMapper, hardcodedJsonClaim, userAttrMapper3));
 
         return Collections.singletonList(client);
     }
@@ -228,6 +248,11 @@ public class KcOidcBrokerConfiguration implements BrokerConfiguration {
     @Override
     public String getIDPAlias() {
         return IDP_OIDC_ALIAS;
+    }
+
+    @Override
+    public String getFirstName() {
+        return USER_FIRST_NAME;
     }
 
 }

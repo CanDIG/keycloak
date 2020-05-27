@@ -50,15 +50,17 @@ public abstract class AbstractIdentityProviderMapperTest extends AbstractBaseBro
         UserRepresentation user = UserBuilder.create()
                 .username(bc.getUserLogin())
                 .email(bc.getUserEmail())
+                .firstName(bc.getFirstName())
                 .build();
         user.setEmailVerified(true);
         user.setAttributes(attributes);
-
         this.userId = createUserAndResetPasswordWithAdminClient(adminClient.realm(bc.providerRealmName()), user, bc.getUserPassword());
     }
 
     protected UserRepresentation findUser(String realm, String userName, String email) {
         UsersResource consumerUsers = adminClient.realm(realm).users();
+
+        System.out.println(consumerUsers.list().get(0).getUsername());
 
         List<UserRepresentation> users = consumerUsers.list();
         assertThat("There must be exactly one user", users, hasSize(1));
@@ -72,13 +74,11 @@ public abstract class AbstractIdentityProviderMapperTest extends AbstractBaseBro
                 .map(RoleRepresentation::getName)
                 .collect(Collectors.toList());
         user.setRealmRoles(realmRoles);
-
         Map<String, List<String>> clientRoles = new HashMap<>();
         roles.getClientMappings().forEach((key, value) -> clientRoles.put(key, value.getMappings().stream()
                 .map(RoleRepresentation::getName)
                 .collect(Collectors.toList())));
         user.setClientRoles(clientRoles);
-
         return user;
     }
 }
