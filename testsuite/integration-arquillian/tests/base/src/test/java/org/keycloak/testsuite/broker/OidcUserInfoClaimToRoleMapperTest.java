@@ -23,15 +23,13 @@ import static org.keycloak.models.IdentityProviderMapperSyncMode.LEGACY;
  */
 public class OidcUserInfoClaimToRoleMapperTest extends AbstractRoleMapperTest {
 
-    private static final String USER_INFO_CLAIM = KcOidcBrokerConfiguration.ATTRIBUTE_TO_MAP_USER_INFO;
+    private static final String USER_INFO_CLAIM = KcOidcBrokerConfigurationUserInfoOnlyMappers.ATTRIBUTE_TO_MAP_USER_INFO;
     private static final String USER_INFO_CLAIM_VALUE = "value 1";
-    private static final String ACCESS_TOKEN_CLAIM = KcOidcBrokerConfiguration.ATTRIBUTE_TO_MAP_NAME;
-    private static final String ACCESS_TOKEN_CLAIM_VALUE = "value 2";
     private String claimOnSecondLogin = "";
 
     @Override
     protected BrokerConfiguration getBrokerConfiguration() {
-        return new KcOidcBrokerConfiguration();
+        return new KcOidcBrokerConfigurationUserInfoOnlyMappers();
     }
 
     @Test
@@ -59,19 +57,6 @@ public class OidcUserInfoClaimToRoleMapperTest extends AbstractRoleMapperTest {
         UserRepresentation user = findUser(bc.consumerRealmName(), bc.getUserLogin(), bc.getUserEmail());
         assertThatRoleHasNotBeenAssignedInConsumerRealmTo(user);
     }
-
-//    @Test
-//    public void noRoleAddedIfUserInfoDisabledAndOnlyClaimIsInUserInfo() {
-//        createClaimToRoleMapperWithUserInfoDisabledInIdP(USER_INFO_CLAIM_VALUE);
-//        createUserInProviderRealm(ImmutableMap.<String, List<String>>builder()
-//                .put(USER_INFO_CLAIM, ImmutableList.<String>builder().add(USER_INFO_CLAIM_VALUE).build())
-//                .build());
-//
-//        logInAsUserInIDPForFirstTime();
-//
-//        UserRepresentation user = findUser(bc.consumerRealmName(), bc.getUserLogin(), bc.getUserEmail());
-//        assertThatRoleHasNotBeenAssignedInConsumerRealmTo(user);
-//    }
 
     @Test
     public void claimValuesMismatch() {

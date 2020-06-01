@@ -68,8 +68,6 @@ public abstract class AbstractIdentityProviderMapperTest extends AbstractBaseBro
     protected UserRepresentation findUser(String realm, String userName, String email) {
         UsersResource consumerUsers = adminClient.realm(realm).users();
 
-        System.out.println(consumerUsers.list().get(0).getUsername());
-
         List<UserRepresentation> users = consumerUsers.list();
         assertThat("There must be exactly one user", users, hasSize(1));
         UserRepresentation user = users.get(0);
