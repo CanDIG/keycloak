@@ -210,7 +210,9 @@ public class KcOidcBrokerConfiguration implements BrokerConfiguration {
         config.put("userInfoUrl", getAuthRoot(suiteContext) + "/auth/realms/" + REALM_PROV_NAME + "/protocol/openid-connect/userinfo");
         config.put("defaultScope", "email profile");
         config.put("backchannelSupported", "true");
+//        config.put("disableUserInfo", "false");
     }
+
 
     @Override
     public String getUserLogin() {

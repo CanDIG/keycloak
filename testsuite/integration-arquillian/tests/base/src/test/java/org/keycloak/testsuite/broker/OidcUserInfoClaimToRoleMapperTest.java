@@ -23,8 +23,10 @@ import static org.keycloak.models.IdentityProviderMapperSyncMode.LEGACY;
  */
 public class OidcUserInfoClaimToRoleMapperTest extends AbstractRoleMapperTest {
 
-    private static final String CLAIM = KcOidcBrokerConfiguration.ATTRIBUTE_TO_MAP_USER_INFO;
-    private static final String CLAIM_VALUE = "value 1";
+    private static final String USER_INFO_CLAIM = KcOidcBrokerConfiguration.ATTRIBUTE_TO_MAP_USER_INFO;
+    private static final String USER_INFO_CLAIM_VALUE = "value 1";
+    private static final String ACCESS_TOKEN_CLAIM = KcOidcBrokerConfiguration.ATTRIBUTE_TO_MAP_NAME;
+    private static final String ACCESS_TOKEN_CLAIM_VALUE = "value 2";
     private String claimOnSecondLogin = "";
 
     @Override
@@ -33,10 +35,10 @@ public class OidcUserInfoClaimToRoleMapperTest extends AbstractRoleMapperTest {
     }
 
     @Test
-    public void allClaimValuesMatch() {
-        createClaimToRoleMapper(CLAIM_VALUE);
+    public void singleClaimValueInUserInfoMatches() {
+        createClaimToRoleMapper(USER_INFO_CLAIM_VALUE);
         createUserInProviderRealm(ImmutableMap.<String, List<String>>builder()
-                .put(CLAIM, ImmutableList.<String>builder().add(CLAIM_VALUE).build())
+                .put(USER_INFO_CLAIM, ImmutableList.<String>builder().add(USER_INFO_CLAIM_VALUE).build())
                 .build());
 
         logInAsUserInIDPForFirstTime();
@@ -46,10 +48,36 @@ public class OidcUserInfoClaimToRoleMapperTest extends AbstractRoleMapperTest {
     }
 
     @Test
+    public void noRoleAddedIfUserInfoDisabledAndOnlyClaimIsInUserInfo() {
+        createClaimToRoleMapperWithUserInfoDisabledInIdP(USER_INFO_CLAIM_VALUE);
+        createUserInProviderRealm(ImmutableMap.<String, List<String>>builder()
+                .put(USER_INFO_CLAIM, ImmutableList.<String>builder().add(USER_INFO_CLAIM_VALUE).build())
+                .build());
+
+        logInAsUserInIDPForFirstTime();
+
+        UserRepresentation user = findUser(bc.consumerRealmName(), bc.getUserLogin(), bc.getUserEmail());
+        assertThatRoleHasNotBeenAssignedInConsumerRealmTo(user);
+    }
+
+//    @Test
+//    public void noRoleAddedIfUserInfoDisabledAndOnlyClaimIsInUserInfo() {
+//        createClaimToRoleMapperWithUserInfoDisabledInIdP(USER_INFO_CLAIM_VALUE);
+//        createUserInProviderRealm(ImmutableMap.<String, List<String>>builder()
+//                .put(USER_INFO_CLAIM, ImmutableList.<String>builder().add(USER_INFO_CLAIM_VALUE).build())
+//                .build());
+//
+//        logInAsUserInIDPForFirstTime();
+//
+//        UserRepresentation user = findUser(bc.consumerRealmName(), bc.getUserLogin(), bc.getUserEmail());
+//        assertThatRoleHasNotBeenAssignedInConsumerRealmTo(user);
+//    }
+
+    @Test
     public void claimValuesMismatch() {
         createClaimToRoleMapper("other value");
         createUserInProviderRealm(ImmutableMap.<String, List<String>>builder()
-                .put(CLAIM, ImmutableList.<String>builder().add(CLAIM_VALUE).build())
+                .put(USER_INFO_CLAIM, ImmutableList.<String>builder().add(USER_INFO_CLAIM_VALUE).build())
                 .build());
 
         logInAsUserInIDPForFirstTime();
@@ -88,13 +116,13 @@ public class OidcUserInfoClaimToRoleMapperTest extends AbstractRoleMapperTest {
 
     @Test
     public void updateBrokeredUserDoesNotDeleteRoleIfClaimStillMatches() {
-        UserRepresentation user = createMapperThenLoginWithStandardClaimThenChangeClaimToValue(CLAIM_VALUE, FORCE);
+        UserRepresentation user = createMapperThenLoginWithStandardClaimThenChangeClaimToValue(USER_INFO_CLAIM_VALUE, FORCE);
 
         assertThatRoleHasBeenAssignedInConsumerRealmTo(user);
     }
 
     private UserRepresentation loginWithStandardClaimThenAddMapperAndLoginAgain(IdentityProviderMapperSyncMode syncMode) {
-        return loginWithClaimThenChangeClaimToValue(OidcUserInfoClaimToRoleMapperTest.CLAIM_VALUE, syncMode, true);
+        return loginWithClaimThenChangeClaimToValue(OidcUserInfoClaimToRoleMapperTest.USER_INFO_CLAIM_VALUE, syncMode, true);
     }
 
     private UserRepresentation createMapperThenLoginWithStandardClaimThenChangeClaimToValue(String claimOnSecondLogin, IdentityProviderMapperSyncMode syncMode) {
@@ -106,7 +134,7 @@ public class OidcUserInfoClaimToRoleMapperTest extends AbstractRoleMapperTest {
         this.claimOnSecondLogin = claimOnSecondLogin;
         return loginAsUserTwiceWithMapper(syncMode, createAfterFirstLogin,
             ImmutableMap.<String, List<String>>builder()
-            .put(CLAIM, ImmutableList.<String>builder().add(CLAIM_VALUE).build())
+            .put(USER_INFO_CLAIM, ImmutableList.<String>builder().add(USER_INFO_CLAIM_VALUE).build())
             .build());
     }
 
@@ -115,16 +143,22 @@ public class OidcUserInfoClaimToRoleMapperTest extends AbstractRoleMapperTest {
         createClaimToRoleMapper(idp, claimValue, IdentityProviderMapperSyncMode.IMPORT);
     }
 
+    private void createClaimToRoleMapperWithUserInfoDisabledInIdP(String claimValue) {
+        IdentityProviderRepresentation idp = setupIdentityProviderDisableUserInfo();
+        createClaimToRoleMapper(idp, claimValue, IdentityProviderMapperSyncMode.IMPORT);
+    }
+
     @Override
     protected void createMapperInIdp(IdentityProviderRepresentation idp, IdentityProviderMapperSyncMode syncMode) {
-        createClaimToRoleMapper(idp, CLAIM_VALUE, syncMode);
+        createClaimToRoleMapper(idp, USER_INFO_CLAIM_VALUE, syncMode);
     }
+
 
     @Override
     protected void updateUser() {
         UserRepresentation user = findUser(bc.providerRealmName(), bc.getUserLogin(), bc.getUserEmail());
         ImmutableMap<String, List<String>> mismatchingAttributes = ImmutableMap.<String, List<String>>builder()
-            .put(CLAIM, ImmutableList.<String>builder().add(claimOnSecondLogin).build())
+            .put(USER_INFO_CLAIM, ImmutableList.<String>builder().add(claimOnSecondLogin).build())
             .build();
         user.setAttributes(mismatchingAttributes);
         adminClient.realm(bc.providerRealmName()).users().get(user.getId()).update(user);
@@ -132,11 +166,11 @@ public class OidcUserInfoClaimToRoleMapperTest extends AbstractRoleMapperTest {
 
     private void createClaimToRoleMapper(IdentityProviderRepresentation idp, String claimValue, IdentityProviderMapperSyncMode syncMode) {
         IdentityProviderMapperRepresentation claimToRoleMapper = new IdentityProviderMapperRepresentation();
-        claimToRoleMapper.setName("claim-to-role-mapper");
+        claimToRoleMapper.setName("userinfo-claim-to-role-mapper");
         claimToRoleMapper.setIdentityProviderMapper(ClaimToRoleMapper.PROVIDER_ID);
         claimToRoleMapper.setConfig(ImmutableMap.<String, String>builder()
             .put(IdentityProviderMapperModel.SYNC_MODE, syncMode.toString())
-            .put(ClaimToRoleMapper.CLAIM, OidcUserInfoClaimToRoleMapperTest.CLAIM)
+            .put(ClaimToRoleMapper.CLAIM, OidcUserInfoClaimToRoleMapperTest.USER_INFO_CLAIM)
             .put(ClaimToRoleMapper.CLAIM_VALUE, claimValue)
             .put(ConfigConstants.ROLE, CLIENT_ROLE_MAPPER_REPRESENTATION)
             .build());
