@@ -155,7 +155,7 @@ public class KcOidcBrokerConfiguration implements BrokerConfiguration {
         userAttrMapper3.setProtocol(OIDCLoginProtocol.LOGIN_PROTOCOL);
         userAttrMapper3.setProtocolMapper(UserAttributeMapper.PROVIDER_ID);
 
-        Map<String, String> userAttr3MapperConfig = userAttrMapper.getConfig();
+        Map<String, String> userAttr3MapperConfig = userAttrMapper3.getConfig();
         userAttr3MapperConfig.put(ProtocolMapperUtils.USER_ATTRIBUTE, ATTRIBUTE_TO_MAP_USER_INFO);
         userAttr3MapperConfig.put(OIDCAttributeMapperHelper.TOKEN_CLAIM_NAME, ATTRIBUTE_TO_MAP_USER_INFO);
         userAttr3MapperConfig.put(OIDCAttributeMapperHelper.JSON_TYPE, ProviderConfigProperty.STRING_TYPE);
